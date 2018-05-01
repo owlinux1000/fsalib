@@ -5,13 +5,20 @@
 
 I made this script based on [libformatstr](https://github.com/hellman/libformatstr).
 
+
+## Install
+
+```
+$ gem install fsa
+```
+
 ## Usage
 
 ### Basic
 
 ```ruby
 #coding: ascii-8bit
-require_relative 'fsalib'
+require_relative 'fsa'
 
 target_addr = 0x08049580
 
@@ -40,7 +47,7 @@ p fmt.payload(0)
 
 ```ruby
 #coding: ascii-8bit
-require_relative 'fsalib'
+require_relative 'fsa'
 
 target_addr = 0x08049580
 value = 0xdead            # 2byte(Supported 2byte, 1byte)
