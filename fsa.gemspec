@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Generating payload of format string bug}
   spec.description   = %q{Generating payload of format string bug}
   spec.license       = "MIT"
-  spec.homepage      = "https://github.com/owlinux1000/fsa"
+  spec.homepage      = "https://github.com/owlinux1000/fsalib"
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
   end
