@@ -1,0 +1,14 @@
+language: ruby
+rvm:
+  - 2.3.0
+  - 2.4.0
+  - 2.5.0
+script:
+  - rake dword
+  - rake rop
+  - rake string
+  
+notifications:
+  on_failure: never
+  on_success: never
+    
