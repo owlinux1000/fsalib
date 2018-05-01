@@ -1,6 +1,6 @@
 # fsalib
 
-[![Build Status](https://travis-ci.org/owlinux1000/fsa.svg?branch=master)](https://travis-ci.org/owlinux1000/fsa)
+[![Build Status](https://travis-ci.org/owlinux1000/fsalib.svg?branch=master)](https://travis-ci.org/owlinux1000/fsalib)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 I made this script based on [libformatstr](https://github.com/hellman/libformatstr).
